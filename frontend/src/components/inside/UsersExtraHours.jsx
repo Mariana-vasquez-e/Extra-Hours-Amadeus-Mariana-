@@ -219,7 +219,7 @@ const UsersExtraHours = () => {
                                         <td>{hour.comments}</td>
                                         <td>{hour.totalExtraHour}</td>
                                         <td>{hour.totalPayment}</td>
-                                        <td>
+                                        {auth.role == "ADMIN"?<td>
                                             <Button className="update-button"
                                                 type="primary"
                                                 danger
@@ -258,7 +258,7 @@ const UsersExtraHours = () => {
                                                 </button>
                                             </button>
                                             <button className="delete-button">Delete</button>*/}
-                                        </td>
+                                        </td>: <></>}
                                     </tr>
                                 ))}
                             </tbody>
