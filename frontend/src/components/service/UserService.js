@@ -218,6 +218,7 @@ class UserService {
 
             // Read the JSON response once and store it
             const responseData = await response.json();
+            responseData.ok = response.ok;
             console.log("Resultado de la inserción:", responseData);
             return responseData;
 
@@ -238,15 +239,15 @@ class UserService {
                 });
 
             if (!response.ok) {
-                const errorText = await response.text(); // Opcional: leer el texto del error
+                const errorText = await response.text();
                 throw new Error(`Error eliminando el registro: ${errorText}`);
             }
 
-            const result = await response.json(); 
+            const result = await response.text(); 
 
             console.log("resultado de eliminar el registro: ", result);
             
-            return result ? result : null; 
+            return result ? JSON.parse(result) : null; 
 
         } catch (err) {
             console.error("Error eliminanado la hora extra del usuario: ", err);

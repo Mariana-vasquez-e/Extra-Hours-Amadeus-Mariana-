@@ -4,7 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import { Select, Input } from "antd";
 const { Search } = Input;
 
-const CreateModal = () => {
+const CreateModal = ({onClose, setExtraHours}) => {
 
     //const [employeeId, setEmployeeId] = useState('');
     const { isAuthenticated, auth, logout } = useContext(AuthContext);
@@ -180,7 +180,6 @@ const CreateModal = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault(); // Prevent default form submission
-
         // Check authentication first
         if (!isAuthenticated) {
             setError('Usuario no autenticado');
@@ -228,11 +227,12 @@ const CreateModal = () => {
             //if (response.success) {
             if (response.ok) {
                 alert(`Datos guardados con éxito.`);
+                delete response["ok"];
+                setExtraHours((prev) => [...prev, response]);
                 //`Datos guardados con éxito. ${response.message}. Registro: ${JSON.stringify(response.record)}`
-
                 // Optional: Reset form or close modal
                 setFormData(initialFormState);
-                // onClose();
+                onClose();
             } else {
                 //alert(`Error al insertar la información: ${response.error}`);
                 setError(`Error al insertar la información: ${response.error}`);

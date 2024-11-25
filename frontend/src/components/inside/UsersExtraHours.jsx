@@ -18,14 +18,12 @@ const UsersExtraHours = () => {
     const [error, setError] = useState(null);
     const { isAuthenticated, auth, logout } = useContext(AuthContext);
     const navigate = useNavigate();
-    const [createModalOpen, setCreateModalOpen] = useState(false);
-    const [updateModalOpen, setUpdateModalOpen] = useState(false);
+    //const [isModalOpen, setIsModalOpen] = useState(false);
     //const [selectedHour, setSelectedHour] = useState(null);
     const [selectedHour, setSelectedHour] = useState({});
     const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
     const [isAddModalVisible, setIsAddModalVisible] = useState(false);
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
-
 
     const showAddModal = () => {
         setIsAddModalVisible(true);
@@ -108,7 +106,8 @@ const UsersExtraHours = () => {
     }, [isAuthenticated, auth.role]);
 
     // Función para confirmar la eliminación
-    const handleDeleteOk = async () => {
+    const handleDeleteOk = async (e) => {
+        e.preventDefault();
         if (!selectedHour || !selectedHour.id) {
             alert("No se pudo encontrar el registro a eliminar.");
             return;
@@ -117,11 +116,11 @@ const UsersExtraHours = () => {
         try {
             await UserService.deleteExtraHour(auth.token, selectedHour.id);
             //setExtraHours(extraHours.filter((hour) => hour.id !== id));
-            setExtraHours((prev) => prev.filter((hour) => hour.id !== selectedHour.id)); // Elimina el registro localmente
             //setDeleteModalOpen(false);            
+            setExtraHours((prev) => prev.filter((hour) => hour.id !== selectedHour.id)); // Elimina el registro localmente
             setIsDeleteModalVisible(false); // Cierra el modal
             setSelectedHour(null); // Limpia el estado
-            window.location.reload(); // Recarga toda la página
+            //window.location.reload(); // Recarga toda la página
         } catch (err) {
             console.error('Error deleting extra hour:', err);
             setError('Error deleting extra hour');
@@ -285,7 +284,7 @@ const UsersExtraHours = () => {
                 onCancel={handleAddCancel}
                 footer={null} // Optional: Remove default footer if you want custom buttons
             >
-                <CreateModal /> {/* Render the ExtraHours form here */}
+                <CreateModal onClose={handleAddCancel}  setExtraHours={setExtraHours}/> {/* Render the ExtraHours form here */}
             </Modal>
             {/* Modal para actualizar horas extras */}
             <Modal
