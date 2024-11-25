@@ -238,11 +238,15 @@ class UserService {
                 });
 
             if (!response.ok) {
-                throw new Error('Error eliminando el registro');
+                const errorText = await response.text(); // Opcional: leer el texto del error
+                throw new Error(`Error eliminando el registro: ${errorText}`);
             }
 
-            console.log("resultado de eliminar el registro: ", response.json());
-            return await response.json();
+            const result = await response.json(); 
+
+            console.log("resultado de eliminar el registro: ", result);
+            
+            return result ? result : null; 
 
         } catch (err) {
             console.error("Error eliminanado la hora extra del usuario: ", err);

@@ -219,7 +219,7 @@ const UsersExtraHours = () => {
                                         <td>{hour.comments}</td>
                                         <td>{hour.totalExtraHour}</td>
                                         <td>{hour.totalPayment}</td>
-                                        {auth.role == "ADMIN"?<td>
+                                        {auth.role === "ADMIN"?<td>
                                             <Button className="update-button"
                                                 type="primary"
                                                 danger
