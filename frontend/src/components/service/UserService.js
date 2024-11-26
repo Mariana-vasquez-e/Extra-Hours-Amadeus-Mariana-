@@ -188,7 +188,6 @@ class UserService {
 
     /* método para buscar antes de insertar un registros */
     static async insertUserExtraHours(token, formData) {
-
         console.log("Token:", token);
         console.log("URL:", `${UserService.BASE_URL}/create`);
         console.log("form Data: ", formData);
@@ -218,6 +217,47 @@ class UserService {
 
             // Read the JSON response once and store it
             const responseData = await response.json();
+            responseData.ok = response.ok;
+            console.log("Resultado de la inserción:", responseData);
+            return responseData;
+
+        } catch (err) {
+            console.error("Error eliminanado el usuario: ", err);
+            throw err;
+        }
+    }
+
+    static async updateUserExtraHours(token, formData) {
+        console.log("Token:", token);
+        console.log("URL:", `${UserService.BASE_URL}/update`);
+        console.log("form Data: ", formData);
+
+        try {
+            const response = await fetch(`${UserService.BASE_URL}/update`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'  // Agregado por buena práctica
+                },
+                body: JSON.stringify(formData)
+            });
+            console.log("RESPUESTA SERVER: ", response);
+
+            if (response.status === 403) {
+                const error = await response.text();
+                console.log("Error de autorización:", error);
+                throw new Error('No tiene permisos para realizar esta acción');
+            }
+
+            if (!response.ok) {
+                const error = await response.text();  // Para ver el mensaje de error
+                console.error(`Error al encontrar el empleado: ${error}`);
+                throw new Error(`Error al encontrar el empleado: ${error}`);
+            }
+
+            // Read the JSON response once and store it
+            const responseData = await response.json();
+            console.log("after response", responseData)
             responseData.ok = response.ok;
             console.log("Resultado de la inserción:", responseData);
             return responseData;

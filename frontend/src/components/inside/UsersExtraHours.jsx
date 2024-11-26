@@ -73,7 +73,6 @@ const UsersExtraHours = () => {
     };
 
     useEffect(() => {
-
         if (isAuthenticated && auth.role === 'USER' && auth.email) {
             console.log("Auth state:", { isAuthenticated, role: auth.role, email: auth.email });
             fetchExtraHoursUsersByUser();
@@ -145,10 +144,12 @@ const UsersExtraHours = () => {
 
     //Actulizar
     const handleUpdateOk = () => {
+        setSelectedHour(null);
         setIsUpdateModalVisible(false);
     };
 
     const handleUpdateCancel = () => {
+        setSelectedHour(null);
         setIsUpdateModalVisible(false);
     };
 
@@ -294,7 +295,7 @@ const UsersExtraHours = () => {
                 onCancel={handleUpdateCancel}
                 footer={null}
             >
-                {selectedHour && <UpdateExtraHoursModal selectedHour={selectedHour} />}
+                {selectedHour && <UpdateExtraHoursModal selectedHour={selectedHour} onClose={handleUpdateOk}  setExtraHours={setExtraHours} />}
             </Modal>
             <Modal
                 title="Confirmar eliminación"

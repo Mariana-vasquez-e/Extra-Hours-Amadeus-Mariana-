@@ -352,7 +352,7 @@ const CreateModal = ({onClose, setExtraHours}) => {
                 <button type="submit"
                     disabled={isLoading || !isAuthenticated}
                     className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded ${(isLoading || !isAuthenticated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
-                >Send
+                >
                     {isLoading ? 'Enviando...' : 'Enviar'}
                 </button>
             </form>

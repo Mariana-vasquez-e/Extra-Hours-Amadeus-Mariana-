@@ -5,8 +5,8 @@ import { Select, Input } from "antd";
 const { Search } = Input;
 //import moment from "moment";
 
-const UpdateExtraHoursModal = ({ selectedHour }) => {
-
+const UpdateExtraHoursModal = ({ selectedHour, onClose, setExtraHours }) => {
+    const employee = selectedHour.employee
     //const [employeeId, setEmployeeId] = useState('');
     const { isAuthenticated, auth, logout } = useContext(AuthContext);
     const [error, setError] = useState(null);
@@ -20,25 +20,31 @@ const UpdateExtraHoursModal = ({ selectedHour }) => {
     const [comments, setComments] = useState(selectedHour?.comments || "");*/
 
     const initialFormState = {
-        employeeId: selectedHour.employeeId || "",
-        employeeName: selectedHour.employeeName || "",
-        jobName: selectedHour.jobName || "",
-        salary: selectedHour.salary || "",
-        areaName: selectedHour.areaName || "",
-        percentage: selectedHour.percentage || "",
-        description: selectedHour.description || "",
+        employeeId: employee.employeeId || "",
+        employeeName: employee.employeeName || "",
+        jobName: employee.job.jobName || "",
+        salary: employee.salary || "",
+        areaName: employee.area.areaName || "",
+        percentage: selectedHour.extraHourType.percentage || "",
+        description: selectedHour.extraHourType.description || "",
         startDatetime: selectedHour.startDatetime || "",
         endDatetime: selectedHour.endDatetime || "",
         hourPrice: selectedHour.hourPrice || "",
         amountExtraHours: selectedHour.amountExtraHours || "",
         comments: selectedHour.comments || "",
-        totalExtraHour: selectedHour.totalExtra || "",
-        totalPayment: selectedHour.totalExtra || "",
-        hourTypeId: selectedHour.hourTypeId || "",
-        //id: undefined,
+        totalExtraHour: selectedHour.totalExtraHour || "",
+        totalPayment: selectedHour.totalPayment || "",
+        hourTypeId: selectedHour.extraHourType.id || "",
+        hourId: selectedHour.id,
     }
 
-    const [formData, setFormData] = useState({ initialFormState });
+    const [formData, setFormData] = useState( initialFormState );
+
+    useEffect(() => {
+        if (selectedHour) {
+            setFormData(initialFormState);
+        }
+    }, [selectedHour])
 
     //Para calcular en pantalla la cantidad de horas extras
     const calculateHours = useMemo(() => (startDate, endDate) => {
@@ -96,45 +102,6 @@ const UpdateExtraHoursModal = ({ selectedHour }) => {
 
     }, [auth.token, isAuthenticated]);
 
-    const searchUser = useCallback(async (employeeId) => {
-        if (!employeeId) return;
-
-        //e.preventDefault();
-        setIsLoading(true);
-        try {
-            //setLoading(true);
-            const userData = await UserService.searchUser(auth.token, employeeId);
-            //setError(null);
-            //return userData;
-            console.log("RESPUESTA DESDE LA BUSQUEDA: ", userData);
-            // Check if the response is okay
-            /*if (!userData.ok) {
-                throw new Error('Error fetching employee information', userData);
-            }*/
-
-            // Since userData is already a parsed object, we can use it directly
-            setFormData(prev => ({
-                ...prev,
-                employeeId: userData.employeeId,
-                employeeName: userData.employeeName,
-                jobName: userData.jobName,
-                salary: userData.salary?.toString() || '',
-                hourPrice: userData.hourPrice?.toString() || '',
-                areaName: userData.areaName,
-            }));
-
-            //return userData;
-            setError(null);
-
-        } catch (err) {
-            console.error('Error consultado el empleado:', err);
-            setError('Error consultado el empleado:' + err.message);
-            //return null;
-            setFormData(initialFormState);
-        } finally {
-            setIsLoading(false);
-        }
-    }, [auth.token, initialFormState]);
 
     //Para ir capturando el valor del campo tipo de horas
     const handleHourTypeChange = useCallback((value) => {
@@ -222,24 +189,38 @@ const UpdateExtraHoursModal = ({ selectedHour }) => {
                 },
                 extraHourType: {
                     id: formData.hourTypeId
-                    //id: formData.id
-                }
+                },
+                extraHourId: formData.hourId
             };
 
             console.log("CONST DATA", requestData);
 
             // Update the UserService method to accept the form data
-            const response = await UserService.insertUserExtraHours(auth.token, requestData);
+            const response = await UserService.updateUserExtraHours(auth.token, requestData);
 
             // Handle successful response
             //if (response.success) {
             if (response.ok) {
-                alert(`Datos guardados con éxito.`);
+                alert(`Datos actualizados con éxito.`);
                 //`Datos guardados con éxito. ${response.message}. Registro: ${JSON.stringify(response.record)}`
-
+                console.log(response)
+                delete response["ok"];
+                setExtraHours((prev) =>{
+                    console.log(prev)
+                    return(
+                    prev.map((hour) =>{
+                        console.log(hour)
+                        return(hour.id === response.id
+                            ? { ...hour, ...response } 
+                            : hour)
+                    }
+                        
+                    ))}
+                );
+                
                 // Optional: Reset form or close modal
                 setFormData(initialFormState);
-                // onClose();
+                onClose();
             } else {
                 //alert(`Error al insertar la información: ${response.error}`);
                 setError(`Error al insertar la información: ${response.error}`);
@@ -359,7 +340,7 @@ const UpdateExtraHoursModal = ({ selectedHour }) => {
                 <button type="submit"
                     disabled={isLoading || !isAuthenticated}
                     className={`mt-4 px-4 py-2 bg-blue-500 text-white rounded ${(isLoading || !isAuthenticated) ? 'opacity-50 cursor-not-allowed' : 'hover:bg-blue-600'}`}
-                >Send
+                >
                     {isLoading ? 'Enviando...' : 'Enviar'}
                 </button>
             </form>
@@ -369,15 +350,18 @@ const UpdateExtraHoursModal = ({ selectedHour }) => {
 };
 
 // Extracted components for better organization
-const EmployeeInfo = ({ formData }) => (
-    <div className="grid grid-cols-2 gap-2 p-4 bg-gray-50 rounded">
-        <InfoField label="Employee Name" value={formData.employeeName} />
-        <InfoField label="Position" value={formData.jobName} />
-        <InfoField label="Salary" value={formData.salary} />
-        <InfoField label="Area" value={formData.areaName} />
-        <InfoField label="Hour Price" value={formData.hourPrice} />
-    </div>
-);
+const EmployeeInfo = ({ formData }) =>{
+    return (
+        <div className="grid grid-cols-2 gap-2 p-4 bg-gray-50 rounded">
+            <InfoField label="Employee Name" value={formData.employeeName} />
+            <InfoField label="Position" value={formData.jobName} />
+            <InfoField label="Salary" value={formData.salary} />
+            <InfoField label="Area" value={formData.areaName} />
+            <InfoField label="Hour Price" value={formData.hourPrice} />
+        </div>
+    );
+} 
+   
 
 const InfoField = ({ label, value }) => (
     <div>

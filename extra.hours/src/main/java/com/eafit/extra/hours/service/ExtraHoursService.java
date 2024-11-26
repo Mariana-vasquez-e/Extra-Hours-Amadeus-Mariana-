@@ -156,4 +156,35 @@ public class ExtraHoursService {
         }
         horasExtrasRepository.deleteById(id);
     }
+
+    public HorasExtras updateExtraHours(ExtraHoursDTO dto) {
+        // Fetch the existing record
+        HorasExtras existingRecord = horasExtrasRepository.findById(dto.getExtraHourId().getExtraHourId())
+                .orElseThrow(() -> new EntityNotFoundException("Extra hour record with ID " + dto + " not found"));
+
+        // Fetch employee and hour type
+        Employees employee = employeesRepository.findByEmployeeId(dto.getEmployee().getEmployeeId())
+                .orElseThrow(() -> new EntityNotFoundException("Employee not found with ID: " + dto.getEmployee().getEmployeeId()));
+        HourTypes hourType = hourTypesRepository.findById(dto.getExtraHourType().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Hour type not found with ID: " + dto.getExtraHourType().getId()));
+
+        // Calculate updated values
+        BigDecimal amountExtraHours = calculateHours(dto.getStartDatetime(), dto.getEndDatetime());
+        BigDecimal totalExtraHour = calculateTotalExtraHour(dto.getHourPrice(), hourType.getPercentage());
+        BigDecimal totalPayment = calculateTotalPayment(employee.getSalary(), totalExtraHour);
+
+        // Update fields
+        existingRecord.setHourPrice(dto.getHourPrice());
+        existingRecord.setStartDatetime(dto.getStartDatetime());
+        existingRecord.setEndDatetime(dto.getEndDatetime());
+        existingRecord.setAmountExtraHours(amountExtraHours);
+        existingRecord.setComments(dto.getComments());
+        existingRecord.setTotalExtraHour(totalExtraHour);
+        existingRecord.setTotalPayment(totalPayment);
+        existingRecord.setEmployee(employee);
+        existingRecord.setExtraHourType(hourType);
+
+        // Save updated record
+        return horasExtrasRepository.save(existingRecord);
+    }
 }

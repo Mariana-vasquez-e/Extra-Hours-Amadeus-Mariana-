@@ -69,11 +69,11 @@ public class AdminExtraHours {
         return ResponseEntity.noContent().build();
     }
 
-    /*@PostMapping("/update")
-    public ResponseEntity<Void> updateExtrahours(@RequestBody @Valid ExtraHoursDTO extraHoursDTO) {
-        extraHoursService.updateExtraHours(extraHoursDTO);
-        return ResponseEntity.ok().build();
-    }*/
+    @PutMapping("/update")
+    public ResponseEntity<HorasExtras> updateExtraHours(@RequestBody @Valid ExtraHoursDTO horasExtrasDTO) {
+        HorasExtras updatedRecord = extraHoursService.updateExtraHours(horasExtrasDTO);
+        return ResponseEntity.ok(updatedRecord);
+    }
 
     @GetMapping("/list-hour-types")
     public ResponseEntity<List<HourTypeDTO>> getAllHourTypes(){

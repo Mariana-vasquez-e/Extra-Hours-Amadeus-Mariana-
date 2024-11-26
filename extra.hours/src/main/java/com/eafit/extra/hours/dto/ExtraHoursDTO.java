@@ -52,6 +52,8 @@ public class ExtraHoursDTO {
     //private EmployeeDTO employee;
     private HourTypeDTO extraHourType;
 
+    private ExtraHourDTO extraHourId;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -64,6 +66,13 @@ public class ExtraHoursDTO {
     @AllArgsConstructor
     public static class HourTypeDTO {
         private Integer id;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ExtraHourDTO {
+        private Integer extraHourId;
     }
 
     // Getters and Setters
