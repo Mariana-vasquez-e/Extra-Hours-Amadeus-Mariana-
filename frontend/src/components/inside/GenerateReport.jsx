@@ -10,10 +10,7 @@ import * as XLSX from "xlsx";
 const GenerateReport = ({ data }) => {
     const [extraHours, setExtraHours] = useState([]);
     console.log("report",data)
-    let newData = data.map((hour) => {
-
-    console.log(hour)
-        return({
+    let newData = data.map((hour) => ({
                 id: hour.id,
                 comments: hour.comments,
                 employeeId: hour.employee.employeeId,
@@ -27,9 +24,7 @@ const GenerateReport = ({ data }) => {
                 totalExtraHour: hour.totalExtraHour,
                 totalPayment: hour.totalPayment,
                 description: hour.extraHourTypeDescription,
-            });
-        })
-    console.log(newData)
+            }));
     const handleDownload = () => {
         /*
          * Se crea una hoja de calculo con la información recibida "data"
