@@ -9,7 +9,6 @@ import * as XLSX from "xlsx";
  */
 const GenerateReport = ({ data }) => {
     const [extraHours, setExtraHours] = useState([]);
-    console.log("report",data)
     let newData = data.map((hour) => ({
                 id: hour.id,
                 comments: hour.comments,
@@ -31,7 +30,7 @@ const GenerateReport = ({ data }) => {
          * luego se crea un libro y se agrega a la hoja de calculo, despues
          * se genera como tal el archivvo de excel y se procede a la descarga
          */
-        const ws = XLSX.utils.json_to_sheet(extraHours);
+        const ws = XLSX.utils.json_to_sheet(newData);
         const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "Horas Extras Ingeniería");
         XLSX.writeFile(wb, "ReporteHorasExtrasIngenieria.xlsx");
