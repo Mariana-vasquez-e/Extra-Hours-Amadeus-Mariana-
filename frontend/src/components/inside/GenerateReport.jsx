@@ -11,18 +11,17 @@ const GenerateReport = ({ data }) => {
     const [extraHours, setExtraHours] = useState([]);
     let newData = data.map((hour) => ({
                 id: hour.id,
-                comments: hour.comments,
                 employeeId: hour.employee.employeeId,
                 employeeName: hour.employee.employeeName,
+                jobName: hour.employee.job.jobName ,
                 salary: hour.employee.salary,
                 areaName: hour.employee.area.areaName,
-                jobName: hour.employee.job.jobName ,
                 amountExtraHours: hour.amountExtraHours,
                 startDatetime: hour.startDatetime,
                 endDatetime: hour.endDatetime,
                 totalExtraHour: hour.totalExtraHour,
                 totalPayment: hour.totalPayment,
-                description: hour.extraHourTypeDescription,
+                comments: hour.comments,
             }));
     const handleDownload = () => {
         /*
@@ -32,8 +31,8 @@ const GenerateReport = ({ data }) => {
          */
         const ws = XLSX.utils.json_to_sheet(newData);
         const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Horas Extras Ingeniería");
-        XLSX.writeFile(wb, "ReporteHorasExtrasIngenieria.xlsx");
+        XLSX.utils.book_append_sheet(wb, ws, "Horas Extras reporte");
+        XLSX.writeFile(wb, "ReporteHorasExtrasreporte.xlsx");
     };
     return (
         <button
